@@ -97,7 +97,7 @@ int board_early_init_f(void)
 
 int board_init(void)
 {
-#if CONFIG_TARGET_SMARC_RZF
+#if 0
 	struct udevice *dev;
 	struct udevice *bus;
 	const u8 pmic_bus = 0;
@@ -136,6 +136,7 @@ re_read:
 	}
 	udelay(10);
 #endif
+	*(volatile u32 *)(PFC_ETH_ch0) = (*(volatile u32 *)(PFC_ETH_ch0) & 0xFFFFFFFC) | ETH_ch0_1_8;
 	return 0;
 }
 
