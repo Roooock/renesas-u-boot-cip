@@ -30,6 +30,9 @@ config RZF_DDR_C_011_D4_01_1
 
 config RZF_DDR_C_011_D4_01_2
 	bool "param_mc_C-011_D4-01-2"
+
+config RZF_DDR_TINKER_V
+	bool "param_mc_tinker-v"
 endchoice
 
 endif

@@ -14,5 +14,6 @@ obj-$(CONFIG_RZF_DDR_SWIZZLE_T3BCUD)	+= param_swizzle_T3bcud.o
 obj-$(CONFIG_RZF_DDR_SWIZZLE_T3BCUD2)	+= param_swizzle_T3bcud2.o
 obj-$(CONFIG_RZF_DDR_SWIZZLE_T3BCUL)	+= param_swizzle_T3bcul.o
 obj-$(CONFIG_RZF_DDR_SWIZZLE_T3CL)	+= param_swizzle_T3cl.o
+obj-$(CONFIG_RZF_DDR_SWIZZLE_TINKER_V)	+= param_swizzle_tinker-v.o
 
 endif
