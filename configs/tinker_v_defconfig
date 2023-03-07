@@ -39,7 +39,7 @@ CONFIG_SMBIOS_PRODUCT_NAME=""
 # configuration of OF
 CONFIG_OF_CONTROL=y
 CONFIG_OF_SEPARATE=y
-CONFIG_OF_LIST="smarc-rzf"
+CONFIG_OF_LIST="tinker-v"
 CONFIG_OF_LIBFDT_OVERLAY=y
 # configuration of driver
 CONFIG_CLK=y
