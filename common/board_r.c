@@ -78,6 +78,13 @@
 #include <efi_loader.h>
 #endif
 
+#if defined(CONFIG_TARGET_SMARC_RZF)
+#include <linux/delay.h>
+
+#define GPIO12_0 376
+#define GPIO12_1 377
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 ulong monitor_flash_len;
@@ -547,6 +554,19 @@ static int initr_net(void)
 #if defined(CONFIG_RESET_PHY_R)
 	debug("Reset Ethernet PHY\n");
 	reset_phy();
+#endif
+#if defined(CONFIG_TARGET_SMARC_RZF)
+	puts("Reset Ethernet PHY\n");
+	gpio_request(GPIO12_0, "LAN0_RTL8211F_RESET");
+	gpio_direction_output(GPIO12_0, 0);
+	mdelay(10);
+	gpio_direction_output(GPIO12_0, 1);
+	gpio_free(GPIO12_0);
+	gpio_request(GPIO12_1, "LAN1_RTL8211F_RESET");
+	gpio_direction_output(GPIO12_1, 0);
+	mdelay(10);
+	gpio_direction_output(GPIO12_1, 1);
+	gpio_free(GPIO12_1);
 #endif
 	return 0;
 }
