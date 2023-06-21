@@ -9,6 +9,7 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include "r9a07g043f.dtsi"
+#include "r9a07g043f-u-boot.dtsi"
 #include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
 / {
 	model = "ASUS Tinker V";
@@ -16,6 +17,7 @@
 
 	aliases {
 		serial0 = &scif0;
+		spi0 = &spibsc;
 	};
 
 	chosen {
@@ -62,6 +64,8 @@
 &sdhi0 {
 	bus-width = <8>;
 	status = "okay";
+	/* This is used for interface that support both eMMC and SD in board */
+	mutual-channel;
 };
 
 &sdhi1 {
@@ -83,6 +87,25 @@
 	status = "okay";
 };
 
+&spibsc {
+	num-cs = <1>;
+	status = "okay";
+	spi-max-frequency = <40000000>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	flash0: spi-flash@0 {
+		u-boot,dm-spl;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spi-flash", "jedec,spi-nor";
+		spi-max-frequency = <40000000>;
+		spi-tx-bus-width = <1>;
+		spi-rx-bus-width = <1>;
+		reg = <0>;
+		status = "okay";
+	};
+};
+
 &eth1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&eth1_pins>;
@@ -93,4 +116,9 @@
 	phy1: ethernet-phy@7 {
 		reg = <7>;
 	};
+};
+
+&wdt0 {
+	status = "okay";
+	timeout-sec = <60>;
 };
