@@ -12,11 +12,18 @@
 #include <mmc.h>
 #include <i2c.h>
 #include <hang.h>
+#include <wdt.h>
+#include <rzg2l_wdt.h>
 #include <renesas/rzf-dev/rzf-dev_def.h>
 #include <renesas/rzf-dev/rzf-dev_sys.h>
 #include <renesas/rzf-dev/rzf-dev_pfc_regs.h>
 #include <renesas/rzf-dev/rzf-dev_cpg_regs.h>
 #include "rzf-dev_spi_multi.h"
+
+#define RPC_CMNCR		0x10060000
+
+/* WDT */
+#define WDT_INDEX		0
 
 extern void cpg_setup(void);
 extern void pfc_setup(void);
@@ -90,6 +97,8 @@ int board_early_init_f(void)
 	*(volatile u32 *)(CPG_PL2SDHI_DSEL) = 0x00110011;
 	while (*(volatile u32 *)(CPG_CLKSTATUS) != 0)
 		;
+
+	*(volatile u32 *)(RPC_CMNCR) = 0x01FFF300;
 
 	return 0;
 }
@@ -247,3 +256,26 @@ void board_init_f(ulong dummy)
 		panic("spl_board_init_f() failed: %d\n", ret);
 }
 #endif
+
+void reset_cpu(void)
+{
+#ifdef CONFIG_RENESAS_RZG2LWDT
+	struct udevice *wdt_dev;
+	if (uclass_get_device(UCLASS_WDT, WDT_INDEX, &wdt_dev) < 0) {
+		printf("failed to get wdt device. cannot reset\n");
+		return;
+	}
+	if (wdt_expire_now(wdt_dev, 0) < 0) {
+		printf("failed to expire_now wdt\n");
+	}
+#endif // CONFIG_RENESAS_RZG2LWDT
+}
+
+int board_late_init(void)
+{
+#ifdef CONFIG_RENESAS_RZG2LWDT
+	rzg2l_reinitr_wdt();
+#endif // CONFIG_RENESAS_RZG2LWDT
+
+	return 0;
+}

@@ -19,6 +19,8 @@
 #include <asm/arch/sh_sdhi.h>
 #include <i2c.h>
 #include <mmc.h>
+#include <rzg2l_wdt.h>
+#include <wdt.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -62,6 +64,11 @@ DECLARE_GLOBAL_DATA_PTR;
 #define HcRhDescriptorA		0x048
 #define LPSTS			0x102
 
+#define RPC_CMNCR		0x10060000
+
+/* WDT */
+#define WDT_INDEX		0
+
 void s_init(void)
 {
 	/* SD1 power control: P39_1 = 0; P39_2 = 1; */
@@ -85,6 +92,8 @@ void s_init(void)
 	*(volatile u32 *)(CPG_RESET_I2C) = 0xF000F;
 	/* I2C pin non GPIO enable */
 	*(volatile u32 *)(I2C_CH1) = 0x01010101;
+
+	*(volatile u32 *)(RPC_CMNCR) = 0x01FFF300;
 }
 
 static void board_usb_init(void)
@@ -152,5 +161,23 @@ int board_init(void)
 
 void reset_cpu(void)
 {
+#ifdef CONFIG_RENESAS_RZG2LWDT
+	struct udevice *wdt_dev;
+	if (uclass_get_device(UCLASS_WDT, WDT_INDEX, &wdt_dev) < 0) {
+		printf("failed to get wdt device. cannot reset\n");
+		return;
+	}
+	if (wdt_expire_now(wdt_dev, 0) < 0) {
+		printf("failed to expire_now wdt\n");
+	}
+#endif // CONFIG_RENESAS_RZG2LWDT
+}
 
+int board_late_init(void)
+{
+#ifdef CONFIG_RENESAS_RZG2LWDT
+	rzg2l_reinitr_wdt();
+#endif // CONFIG_RENESAS_RZG2LWDT
+
+	return 0;
 }
